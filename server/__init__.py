@@ -1,5 +1,6 @@
 from flask import Flask
 
+
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'secret key here'
@@ -9,6 +10,9 @@ def create_app():
 
     from . import auth
     app.register_blueprint(auth.bp)
+
+    from . import user
+    app.register_blueprint(user.bp)
 
     @app.route('/')
     def index():

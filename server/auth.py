@@ -28,7 +28,7 @@ def login():
 
         if error is None:
             session.clear()
-            session['user_id'] = user['id']
+            session['user_id'] = user['user_id']
             return redirect(url_for('index'))
 
         flash(error)
@@ -44,7 +44,7 @@ def load_logged_in_user():
         g.user = None
     else:
         g.user = get_db().execute(
-            'SELECT * FROM user WHERE id = ?', (user_id,)
+            'SELECT * FROM user WHERE user_id = ?', (user_id,)
         ).fetchone()
 
 
