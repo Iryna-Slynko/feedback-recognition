@@ -129,4 +129,5 @@ dmypy.json
 .pyre/
 
 .vscode
+.vs
 local.sqlite
