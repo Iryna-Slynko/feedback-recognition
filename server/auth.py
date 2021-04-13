@@ -9,6 +9,7 @@ from server.db import get_db
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
     if request.method == 'POST':
@@ -34,6 +35,7 @@ def login():
 
     return render_template('auth/login.html')
 
+
 @bp.before_app_request
 def load_logged_in_user():
     user_id = session.get('user_id')
@@ -45,10 +47,12 @@ def load_logged_in_user():
             'SELECT * FROM user WHERE id = ?', (user_id,)
         ).fetchone()
 
+
 @bp.route('/logout')
 def logout():
     session.clear()
     return redirect(url_for('auth.login'))
+
 
 def admin_required(view):
     @functools.wraps(view)
@@ -61,6 +65,7 @@ def admin_required(view):
         return view(**kwargs)
 
     return wrapped_view
+
 
 def login_required(view):
     @functools.wraps(view)
