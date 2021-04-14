@@ -14,6 +14,9 @@ def create_app():
     from . import user
     app.register_blueprint(user.bp)
 
+    from . import data
+    app.register_blueprint(data.bp)
+
     @app.route('/')
     def index():
         return 'Hello, World!'
