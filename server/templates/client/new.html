@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}New Client{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    <label for="title">Username</label>
+    <input name="title" id="title" value="{{ request.form['username'] }}" required>
+    <label for="password">Password</label>
+    <input name="password" id="password" type="password" required>
+    <label for="role">Role</label>
+    <input list="roles" name="role" id="role" required value="{{ request.form['role'] }}">
+
+    <datalist id="roles">
+        <option value="user">
+        <option value="admin">
+    </datalist>
+    <input type="submit" value="Create">
+</form>
+{% endblock %}

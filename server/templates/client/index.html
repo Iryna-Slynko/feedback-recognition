@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Clients{% endblock %}</h1>
+<a class="action" href="{{ url_for('client.create') }}">New</a>
+{% endblock %}
+
+
+{% block content %}
+<table>
+    <thead>
+        <th>
+            Client Name
+        </th>
+        <th>
+            Token
+        </th>
+        <th>
+            Location ID
+        </th>
+    </thead>
+    <tbody>
+        {% for client in clients %}
+        <tr>
+            <td>
+                <a class="action" href="{{ url_for('client.edit') }}">
+                    {{client['client']}}
+                </a>
+            </td>
+            <td>
+                {{client['token']}}
+            </td>
+            <td>
+                {{client['location_id']}}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

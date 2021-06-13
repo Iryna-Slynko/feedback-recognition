@@ -6,6 +6,7 @@ CREATE TABLE client (
   client_id INTEGER PRIMARY KEY AUTOINCREMENT,
   client TEXT UNIQUE NOT NULL,
   token TEXT NOT NULL,
+  token_start CHAR(3) NOT NULL,
   location_id INTEGER NOT NULL /* external location id */
 );
 
