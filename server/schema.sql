@@ -22,4 +22,4 @@ CREATE TABLE user(
     username TEXT UNIQUE NOT NULL,
     password TEXT UNIQUE NOT NULL,
     role TEXT UNIQUE NOT NULL DEFAULT 'user'
-)
+);
