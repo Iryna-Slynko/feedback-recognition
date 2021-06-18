@@ -6,7 +6,6 @@ from flask import current_app, g
 from flask.cli import with_appcontext
 from werkzeug.security import generate_password_hash
 
-
 def get_db():
     if 'db' not in g:
         c: Dict[str, str] = current_app.config
@@ -19,7 +18,7 @@ def get_db():
     return g.db
 
 
-def close_db(e=None):
+def close_db(_=None):
     db = g.pop('db', None)
 
     if db is not None:
