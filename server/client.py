@@ -50,7 +50,14 @@ def index():
     ).fetchall()
     return render_template("client/index.html", clients=clients)
 
+
 @bp.route('/<int:client_id>/update', methods=('GET', 'POST'))
 @admin_required
 def update(client_id):
-    return render_template("client/edit.html")
+    client = get_db().execute(
+        "SELECT client, token_start, location_id"
+        " FROM client"
+        " WHERE client_id= ?",
+        (client_id,)
+    )
+    return render_template("client/edit.html", client=client)
