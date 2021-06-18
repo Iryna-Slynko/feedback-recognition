@@ -23,7 +23,7 @@ def create():
             is not None
         ):
             error = 'User already exists.'
-        if role != 'user' or role != 'admin':
+        elif role != 'user' or role != 'admin':
             error = 'Incorrect role'
         if error is None:
             db.execute(
