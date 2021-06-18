@@ -12,19 +12,23 @@ bp = Blueprint('user', __name__, url_prefix='/user')
 @admin_required
 def create():
     if request.method == 'POST':
-        username = request.form['username']
-        password = request.form['password']
+        username = request.form.get('username')
+        password = request.form.get('password')
         role = request.form['role']
         db = get_db()
         error = None
-        if (
+        if not username:
+            error = 'Username is not set'
+        elif not password:
+            error = 'Password is not set'
+        elif role != 'user' or role != 'admin':
+            error = 'Incorrect role'
+        elif (
             db.execute("SELECT id FROM user WHERE username = ?",
                        (username,)).fetchone()
             is not None
         ):
             error = 'User already exists.'
-        elif role != 'user' or role != 'admin':
-            error = 'Incorrect role'
         if error is None:
             db.execute(
                 "INSERT INTO user (username, password, role) VALUES (?, ?, ?)",
