@@ -23,12 +23,12 @@
         {% for client in clients %}
         <tr>
             <td>
-                <a class="action" href="{{ url_for('client.edit') }}">
+                <a class="action" href="{{ url_for('client.update', client_id=client['client_id']) }}">
                     {{client['client']}}
                 </a>
             </td>
             <td>
-                {{client['token']}}
+                {{client['token_start']}}*******
             </td>
             <td>
                 {{client['location_id']}}

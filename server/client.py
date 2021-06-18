@@ -49,3 +49,8 @@ def index():
         " FROM client"
     ).fetchall()
     return render_template("client/index.html", clients=clients)
+
+@bp.route('/<int:client_id>/update', methods=('GET', 'POST'))
+@admin_required
+def update(client_id):
+    return render_template("client/edit.html")
