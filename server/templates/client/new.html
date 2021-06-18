@@ -6,17 +6,11 @@
 
 {% block content %}
 <form method="post">
-    <label for="title">Username</label>
-    <input name="title" id="title" value="{{ request.form['username'] }}" required>
-    <label for="password">Password</label>
-    <input name="password" id="password" type="password" required>
-    <label for="role">Role</label>
-    <input list="roles" name="role" id="role" required value="{{ request.form['role'] }}">
+    <label for="client_name">Client Name</label>
+    <input name="client_name" id="client_name" value="{{ request.form['client_name'] }}" required>
+    <label for="location_id">Location</label>
+    <input name="location_id" id="location_id" value="{{ request.form['location_id'] }}" required>
 
-    <datalist id="roles">
-        <option value="user">
-        <option value="admin">
-    </datalist>
     <input type="submit" value="Create">
 </form>
 {% endblock %}
