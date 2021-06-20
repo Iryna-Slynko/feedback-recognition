@@ -1,6 +1,5 @@
-from flask import Flask
-import sys, os
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+from flask import Flask, request, jsonify
+
 import server.db as db
 
 def create_app():
@@ -12,5 +11,12 @@ def create_app():
     @app.route('/')
     def index():
         return 'ok'
+
+    @app.route('/feedback', methods=['POST'])
+    def add_feedback():
+        if not request.json or not 'upvote' in request.json:
+           return (jsonify({"error": "wrong_request"}), 400)
+
+        return jsonify({"created": "ok"})
 
     return app
