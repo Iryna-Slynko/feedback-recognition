@@ -11,7 +11,7 @@ def get_db():
     if 'db' not in g:
         c: Dict[str, str] = current_app.config
         g.db = sqlite3.connect(
-            c.get('DATABASE', 'local.sqlite'),
+            c.get('DATABASE', 'local.db'),
             detect_types=sqlite3.PARSE_DECLTYPES
         )
         g.db.row_factory = sqlite3.Row
