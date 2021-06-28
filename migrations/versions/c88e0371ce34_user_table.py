@@ -19,14 +19,12 @@ def downgrade():
     op.drop_table('user')
 
 def upgrade():
-        op.create_table('user',
+    op.create_table('user',
     sa.Column('user_id', sa.INTEGER(), nullable=True),
     sa.Column('username', sa.TEXT(), nullable=False),
-    sa.Column('password', sa.TEXT(), nullable=False),
+    sa.Column('password_hash', sa.TEXT(), nullable=False),
     sa.Column('role', sa.TEXT(), server_default=sa.text("'user'"), nullable=False),
     sa.PrimaryKeyConstraint('user_id'),
-    sa.UniqueConstraint('password'),
-    sa.UniqueConstraint('role'),
     sa.UniqueConstraint('username')
     )
 
