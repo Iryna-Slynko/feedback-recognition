@@ -3,7 +3,7 @@ from flask import (
 )
 from werkzeug.security import generate_password_hash
 from server.auth import admin_required
-from server.db import get_db
+from server import db
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 

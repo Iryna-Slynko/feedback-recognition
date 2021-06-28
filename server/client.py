@@ -3,7 +3,7 @@ from flask import (
 )
 from werkzeug.security import generate_password_hash
 from server.auth import admin_required
-from server.db import get_db
+from server import db
 from secrets import token_urlsafe
 
 bp = Blueprint('client', __name__, url_prefix='/client')
@@ -15,7 +15,6 @@ def create():
     if request.method == 'POST':
         client_name = request.form.get('client_name')
         location_id = request.form.get('location_id')
-        db = get_db()
         error = None
         if not client_name:
             error = 'Please enter the client name'

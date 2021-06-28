@@ -5,7 +5,8 @@ from flask import (
 )
 from werkzeug.security import check_password_hash
 
-from server.db import get_db
+from server import db
+from server.models import User
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
@@ -15,20 +16,17 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        db = get_db()
         error = None
-        user = db.execute(
-            'SELECT * FROM user WHERE username = ?', (username,)
-        ).fetchone()
+        user = User.query.filter_by(username=username).first()
 
         if user is None:
             error = 'Incorrect username.'
-        elif not check_password_hash(user['password'], password):
+        elif not check_password_hash(user.password_hash, password):
             error = 'Incorrect password.'
 
         if error is None:
             session.clear()
-            session['user_id'] = user['user_id']
+            session['user_id'] = user.user_id
             return redirect(url_for('index'))
 
         flash(error)
@@ -43,9 +41,7 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = get_db().execute(
-            'SELECT * FROM user WHERE user_id = ?', (user_id,)
-        ).fetchone()
+        g.user = User.query.get(user_id)
 
 
 @bp.route('/logout')
@@ -59,7 +55,7 @@ def admin_required(view):
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for('auth.login'))
-        if g.user['role'] != 'admin':
+        if not g.user.is_admin:
             return redirect(url_for('index'))
 
         return view(**kwargs)

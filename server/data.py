@@ -7,7 +7,7 @@ from flask import (
 from werkzeug.exceptions import abort
 
 from server.auth import login_required
-from server.db import get_db
+from server import db
 
 bp = Blueprint('data', __name__, url_prefix='/data')
 

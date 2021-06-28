@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify
 
-import server.db as db
+from server import db
 
 def create_app():
     app = Flask(__name__)
