@@ -130,4 +130,4 @@ dmypy.json
 
 .vscode
 .vs
-local.sqlite
+local.db
