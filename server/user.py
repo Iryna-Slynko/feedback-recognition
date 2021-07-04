@@ -4,6 +4,7 @@ from flask import (
 from werkzeug.security import generate_password_hash
 from server.auth import admin_required
 from server import db
+from server.models import User
 
 bp = Blueprint('user', __name__, url_prefix='/user')
 
@@ -15,26 +16,22 @@ def create():
         username = request.form.get('username')
         password = request.form.get('password')
         role = request.form['role']
-        db = get_db()
         error = None
         if not username:
             error = 'Username is not set'
         elif not password:
             error = 'Password is not set'
-        elif role != 'user' or role != 'admin':
+        elif role != 'user' and role != 'admin':
             error = 'Incorrect role'
         elif (
-            db.execute("SELECT id FROM user WHERE username = ?",
-                       (username,)).fetchone()
-            is not None
+            User.query.filter_by(username=username).first() is not None
         ):
             error = 'User already exists.'
         if error is None:
-            db.execute(
-                "INSERT INTO user (username, password, role) VALUES (?, ?, ?)",
-                (username, generate_password_hash(password), role),
-            )
-            db.commit()
+            u = User(username=username, role=role)
+            u.set_password(password)
+            db.session.add(u)
+            db.session.commit()
             return redirect(url_for('user.index'))
 
         flash(error)
@@ -45,8 +42,5 @@ def create():
 @bp.route('/')
 @admin_required
 def index():
-    users = get_db().execute(
-        "SELECT user_id, username, role"
-        " FROM user"
-    ).fetchall()
+    users = User.query.all()
     return render_template("user/index.html", users=users)

@@ -12,7 +12,8 @@ class User(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def is_admin(self):
-        self.role == 'admin'
+        return self.role == 'admin'
+
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
@@ -28,7 +29,7 @@ class Client(db.Model):
         self.token + '*****'
 
     def __repr__(self):
-        return '<Client {}>'.format(self.username)   
+        return '<Client {}>'.format(self.client)   
 
 
 class Vote(db.Model):
