@@ -25,8 +25,12 @@ class Client(db.Model):
     token_start = db.Column(db.String(3))
     location_id = db.Column(db.Integer)
 
+    def set_token(self, token):
+        self.token =  generate_password_hash(token)
+        self.token_start = token[0:3]
+
     def masked_token(self):
-        self.token + '*****'
+        return self.token_start + '*****'
 
     def __repr__(self):
         return '<Client {}>'.format(self.client)   

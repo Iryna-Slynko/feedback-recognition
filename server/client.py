@@ -1,10 +1,10 @@
 from flask import (
     Blueprint, flash, render_template, request
 )
-from werkzeug.security import generate_password_hash
 from server.auth import admin_required
 from server import db
 from secrets import token_urlsafe
+from server.models import Client
 
 bp = Blueprint('client', __name__, url_prefix='/client')
 
@@ -21,18 +21,15 @@ def create():
         elif not location_id:
             error = 'Please enter the location id'
         elif (
-            db.execute("SELECT client_id FROM client WHERE client = ?",
-                       (client_name,)).fetchone()
-            is not None
+           Client.query.filter_by(client=client_name).first() is not None
         ):
             error = 'Client already exists.'
         if error is None:
             token = token_urlsafe(30)
-            db.execute(
-                "INSERT INTO client (client, token, token_start, location_id) VALUES (?, ?, ?, ?)",
-                (client_name, generate_password_hash(token), token[0:3], location_id),
-            )
-            db.commit()
+            c = Client(client=client_name, location_id=location_id)
+            c.set_token(token)
+            db.session.add(c)
+            db.session.commit()
             return render_template('client/show.html', token=token, client_name=client_name)
 
         flash(error)
@@ -43,10 +40,7 @@ def create():
 @bp.route('/')
 @admin_required
 def index():
-    clients = get_db().execute(
-        "SELECT client_id, client, token_start, location_id"
-        " FROM client"
-    ).fetchall()
+    clients = Client.query.all()
     return render_template("client/index.html", clients=clients)
 
 
