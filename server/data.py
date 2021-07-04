@@ -8,6 +8,7 @@ from werkzeug.exceptions import abort
 
 from server.auth import login_required
 from server import db
+from server.models import Vote
 
 bp = Blueprint('data', __name__, url_prefix='/data')
 
@@ -15,10 +16,7 @@ bp = Blueprint('data', __name__, url_prefix='/data')
 @bp.route('/view.json')
 @login_required
 def view():
-    data = get_db().execute(
-        "SELECT client_id, created, upvote"
-        "FROM data"
-    ).fetchall()
+    data = Vote.query.all()
     return make_response(jsonify(data), 200)
 
 @bp.route('/')
