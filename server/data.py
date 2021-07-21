@@ -17,7 +17,7 @@ bp = Blueprint('data', __name__, url_prefix='/data')
 @login_required
 def view():
     data = Vote.query.all()
-    return make_response(jsonify(data), 200)
+    return make_response(jsonify([d.serialize for d in data]), 200)
 
 @bp.route('/')
 @login_required

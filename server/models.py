@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from server import db
 from werkzeug.security import generate_password_hash
 
@@ -39,8 +39,18 @@ class Client(db.Model):
 class Vote(db.Model):
     vote_id = db.Column(db.Integer, primary_key=True)
     upvote = db.Column(db.Boolean)
-    created = db.Column(db.DateTime, index=True, default=datetime.utcnow)
+    created = db.Column(db.Date, index=True, default=date.today)
     client_id = db.Column(db.Integer, db.ForeignKey('client.client_id'))
 
     def __repr__(self):
         return '<Vote {}>'.format(self.vote_id)
+    
+    @property
+    def serialize(self):
+       """Return object data in easily serializable format"""
+       return {
+           'id'         : self.vote_id,
+           'created'    : self.created.isoformat(),
+           'upvote'     : self.upvote,
+           'client_id'  : self.client_id
+       }
