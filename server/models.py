@@ -45,12 +45,19 @@ class Vote(db.Model):
     def __repr__(self):
         return '<Vote {}>'.format(self.vote_id)
     
+
+class VoteDaily(db.Model):
+    upvotes = db.Column(db.Integer)
+    downvotes = db.Column(db.Integer)
+    date = db.Column(db.Date, primary_key=True)
+    location_id = db.Column(db.Integer, primary_key=True)
+
     @property
     def serialize(self):
-       """Return object data in easily serializable format"""
-       return {
-           'id'         : self.vote_id,
-           'created'    : self.created.isoformat(),
-           'upvote'     : self.upvote,
-           'client_id'  : self.client_id
+        """Return object data in easily serializable format"""
+        return {
+            'location_id'   : self.location_id,
+            'date'          : self.date.isoformat(),
+            'upvotes'       : self.upvotes,
+            'downvotes'     : self.downvotes
        }
