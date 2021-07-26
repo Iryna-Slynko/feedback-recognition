@@ -1,6 +1,8 @@
 -- SQLite
 INSERT INTO VOTE(client_id, upvote, created)
-  SELECT CASE WHEN RANDOM() < 0 THEN 1 ELSE 2 END, CASE WHEN RANDOM() < 100000 THEN 1 ELSE 0 END, date('now')
+  SELECT CASE WHEN RANDOM() < 0 THEN 1 ELSE 2 END, CASE WHEN RANDOM() < 100000 THEN 1 ELSE 0 END, 
+  DATE('NOW', CAST(ABS(RANDOM()) % 60-30 AS VARCHAR(4)) || ' day')
+  
    FROM (SELECT * FROM (
          (SELECT 0 UNION ALL SELECT 1) t2, 
          (SELECT 0 UNION ALL SELECT 1) t4,
@@ -14,4 +16,4 @@ INSERT INTO VOTE(client_id, upvote, created)
          (SELECT 0 UNION ALL SELECT 1) t1024,
          (SELECT 0 UNION ALL SELECT 1) t2048
          )
-    ) LIMIT 246;
+    ) LIMIT 5000;
