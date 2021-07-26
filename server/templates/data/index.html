@@ -3,33 +3,40 @@
 <h1>{% block title %}Data{% endblock %}</h1>
 {% endblock %}
 {% block content %}
-<svg viewBox="113 128 972 800"
-preserveAspectRatio="xMidYMid meet">
-    
+<svg viewBox="113 128 972 800" preserveAspectRatio="xMidYMid meet">
+
 </svg>
 <script>
-    d3.json('/data/view.json')
-      .then(function(data) {
-        let svg = d3.select("svg"),
+  d3.json('/data/view.json')
+    .then(function (data) {
+      let svg = d3.select("svg"),
         xScale = d3.scaleTime().range([1, 750]),
         yScale = d3.scaleLinear().range([0, 500]),
         bandScale = d3.scaleBand();
 
-        var g = svg.append("g")
-               .attr("transform", "translate(" + 200 + "," + 700 + ")");
-        xScale.domain([new Date(data[0].date), new Date(data[data.length-1].date) ]);
+      var g = svg.append("g")
+        .attr("transform", "translate(" + 200 + "," + 700 + ")");
+      xScale.domain([new Date(data[0].date), new Date(data[data.length - 1].date)]);
 
-        g.append("g")
-         .call(d3.axisBottom(xScale));
-         svg.data(data)
-          .join('rect')
-          .attr('x', function(d) {
-            return bandScale(d.upvotes);
-          })
-          .attr('width', bandScale.bandwidth())
-          .attr('height', function(d) {
-            return d.value;
-          });
-       });
+      g.append("g")
+        .call(d3.axisBottom(xScale));
+      svg.data(data)
+        .join('rect')
+        .attr('x', function (d) {
+          return bandScale(d.upvotes);
+        })
+        .attr('width', bandScale.bandwidth())
+        .attr('height', function (d) {
+          return d.value;
+        });
+    });
+  let zoom = d3.zoom().on('zoom', function (e) {
+    d3.select('svg g')
+      .attr('transform', e.transform);
+  });
+
+  d3.select('svg')
+    .call(zoom);
+
 </script>
 {% endblock %}
