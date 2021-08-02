@@ -3,23 +3,120 @@
 <h1>{% block title %}Data{% endblock %}</h1>
 {% endblock %}
 {% block content %}
-<svg viewBox="113 128 972 800" preserveAspectRatio="xMidYMid meet">
-
-</svg>
+<d3fc-canvas use-device-pixel-ratio></d3fc-canvas>
 <script>
   d3.json('/data/view.json')
     .then(function (data) {
+
+      const firstDate = new Date(data[0].date),
+            lastDate = new Date(data[data.length - 1].date),
+            series = [],
+            numberOfDays = Math.round((lastDate - firstDate) / 86400000)+1,
+            numberOfClients = data.length / numberOfDays,
+            upvotes = [],
+            container = document.querySelector('d3fc-canvas');
+
+      for (let i = 0, dataIndex = 0; i < numberOfDays; i++) {
+        series[i] = [];
+        series[i]['key'] = new Date(data[dataIndex].date);
+        for (let j = 0; j < numberOfClients; j++, dataIndex++) {
+          series[i][j] = [data[dataIndex].upvotes, data[dataIndex].location_id];
+          series[i][j]["data"] = data[dataIndex];
+          upvotes[dataIndex] = data[dataIndex].upvotes;
+        }
+      }
+
+      const xScale = d3.scaleLinear().domain([0, upvotes.length - 1]);
+
+const yScale = d3.scaleLinear().domain( fc.extentLinear()(upvotes));
+  const series2 = fc
+    .seriesCanvasArea()
+    .xScale(xScale)
+    .yScale(yScale)
+    .crossValue((_, i) => i)
+    .mainValue(d => d);
+ 
+d3.select(container)
+    .on('draw', () => {
+        series2(upvotes);
+    })
+    .on('measure', event => {
+        const { width, height } = event.detail;
+        xScale.range([0, width]);
+        yScale.range([height, 0]);
+
+        const ctx = container.querySelector('canvas').getContext('2d');
+        series2.context(ctx);
+    });
+
+container.requestRedraw();
+      /*
+      // Use a band scale, which provides the bandwidth value to the grouped
+      // series via fc.autobandwidth
+      const xScale = d3
+        .scaleTime()
+        .range([firstDate, lastDate]);
+
+      const yExtent = fc
+        .extentLinear()
+        .accessors([a => a.map(d => d[1])])
+        .include([0]);
+
+      const yScale = d3.scaleLinear().domain(yExtent(series));
+
+      const groupedSeries = fc.seriesSvgBar();
+
+      const color = d3.scaleOrdinal(d3.schemeCategory10);
+
+      // Create the grouped series
+      const groupedBar = fc
+        .seriesSvgGrouped(groupedSeries)
+        .xScale(xScale)
+        .yScale(yScale)
+        .align('left')
+        .crossValue(d => d[0])
+        .mainValue((_, i) => i)
+        .decorate((sel, _, index) => {
+          sel.enter()
+            .select('path')
+            .attr('fill', () => color(index));
+        });
+
+     
+
+      d3.select(container)
+        .on('draw', () => {
+          d3.select(container)
+            .select('svg')
+            .datum(series)
+            .call(fc.autoBandwidth(groupedBar));
+        })
+        .on('measure', event => {
+          const { width, height } = event.detail;
+          xScale.range([0, width]);
+          if (height > 0) {
+          yScale.range([height, 0]);
+          } else {
+            yScale.range([500, 0]);
+          }
+        });
+
+      container.requestRedraw();
+      */
+
+      /*
+
       let svg = d3.select("svg"),
-        xScale = d3.scaleTime().range([1, 750]),
         yScale = d3.scaleLinear().range([0, 500]),
         bandScale = d3.scaleBand();
 
-      var g = svg.append("g")
+      let g = svg.append("g")
         .attr("transform", "translate(" + 200 + "," + 700 + ")");
-      xScale.domain([new Date(data[0].date), new Date(data[data.length - 1].date)]);
-
+ 
+      var prevDay;
+     
       g.append("g")
-        .call(d3.axisBottom(xScale));
+        .call(d3.axisBottom(xScale).orient("bottom").ticks(numberOfDays));
       svg.data(data)
         .join('rect')
         .attr('x', function (d) {
@@ -29,14 +126,17 @@
         .attr('height', function (d) {
           return d.value;
         });
+        */
+
     });
+    /*
   let zoom = d3.zoom().on('zoom', function (e) {
     d3.select('svg g')
       .attr('transform', e.transform);
   });
 
-  d3.select('svg')
+  d3.select('d3fc-svg')
     .call(zoom);
-
+*/
 </script>
 {% endblock %}
