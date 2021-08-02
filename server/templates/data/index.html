@@ -26,19 +26,24 @@
         }
       }
 
-      const xScale = d3.scaleLinear().domain([0, upvotes.length - 1]);
+      const xScale = d3.scaleLinear().domain([0, series.length - 1]);
 
-const yScale = d3.scaleLinear().domain( fc.extentLinear()(upvotes));
+      const yExtent = fc
+        .extentLinear()
+        .accessors([a => a.map(d => d[0])])
+        .include([0]);
+
+      const yScale = d3.scaleLinear().domain(yExtent(series)); 
   const series2 = fc
     .seriesCanvasArea()
     .xScale(xScale)
     .yScale(yScale)
     .crossValue((_, i) => i)
-    .mainValue(d => d);
+    .mainValue(d => { console.log(d[0]); return d[0][0];});
  
 d3.select(container)
     .on('draw', () => {
-        series2(upvotes);
+        series2(series);
     })
     .on('measure', event => {
         const { width, height } = event.detail;
@@ -53,16 +58,9 @@ container.requestRedraw();
       /*
       // Use a band scale, which provides the bandwidth value to the grouped
       // series via fc.autobandwidth
-      const xScale = d3
-        .scaleTime()
-        .range([firstDate, lastDate]);
+      
 
-      const yExtent = fc
-        .extentLinear()
-        .accessors([a => a.map(d => d[1])])
-        .include([0]);
 
-      const yScale = d3.scaleLinear().domain(yExtent(series));
 
       const groupedSeries = fc.seriesSvgBar();
 
