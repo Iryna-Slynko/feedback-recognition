@@ -3,138 +3,119 @@
 <h1>{% block title %}Data{% endblock %}</h1>
 {% endblock %}
 {% block content %}
-<d3fc-canvas use-device-pixel-ratio></d3fc-canvas>
+<d3fc-svg use-device-pixel-ratio></d3fc-svg>
 <script>
   d3.json('/data/view.json')
     .then(function (data) {
+      data.forEach(element => {
+        element.date = new Date(element.date);
+      });
+      const votesGraph = () => {
+        let xScale = d3.scaleTime();
+        let yScale = d3.scaleLinear();
+        let crossValue = d => new Date(d.date);
+        const upvotesBar = fc.autoBandwidth(fc.seriesSvgBar());
+        const downvotesBar = fc.autoBandwidth(fc.seriesSvgBar());
+        const multi = fc.seriesSvgMulti();
 
-      const firstDate = new Date(data[0].date),
-            lastDate = new Date(data[data.length - 1].date),
-            series = [],
-            numberOfDays = Math.round((lastDate - firstDate) / 86400000)+1,
-            numberOfClients = data.length / numberOfDays,
-            upvotes = [],
-            container = document.querySelector('d3fc-canvas');
+        const votes = selection => {
 
-      for (let i = 0, dataIndex = 0; i < numberOfDays; i++) {
-        series[i] = [];
-        series[i]['key'] = new Date(data[dataIndex].date);
-        for (let j = 0; j < numberOfClients; j++, dataIndex++) {
-          series[i][j] = [data[dataIndex].upvotes, data[dataIndex].location_id];
-          series[i][j]["data"] = data[dataIndex];
-          upvotes[dataIndex] = data[dataIndex].upvotes;
-        }
-      }
+          upvotesBar
+            .crossValue(crossValue)
+            .mainValue((d, i) => d.upvotes);
 
-      const xScale = d3.scaleLinear().domain([0, series.length - 1]);
+          downvotesBar
+            .crossValue(crossValue)
+            .mainValue((d, i) => -d.downvotes);
 
-      const yExtent = fc
+
+          multi
+            .xScale(xScale)
+            .yScale(yScale)
+            .series([upvotesBar, downvotesBar])
+            .decorate((g, data, index) => {
+              g.enter().attr(
+                'class',
+                (d, i) =>
+                  'multi ' + ['upvotes', 'downvotes'][i]
+              );
+            });
+
+          selection.call(multi);
+        };
+
+        votes.crossValue = (...args) => {
+          if (!args.length) {
+            return crossValue;
+          }
+          crossValue = args[0];
+          return votes;
+        };
+
+        votes.xScale = (...args) => {
+          if (!args.length) {
+            return xScale;
+          }
+          xScale = args[0];
+          return votes;
+        };
+
+        votes.yScale = (...args) => {
+          if (!args.length) {
+            return yScale;
+          }
+          yScale = args[0];
+          return votes;
+        };
+
+        return votes;
+      };
+
+      const xScale = d3
+        .scaleTime()
+        .domain(fc.extentDate().accessors([d => d.date])(data));
+
+      // the elder ray is rendered on its own scale
+      const yDomain = fc
         .extentLinear()
-        .accessors([a => a.map(d => d[0])])
-        .include([0]);
+        .accessors([d => d.upvotes, d => d.downvotes])
+        .symmetricalAbout(0);
 
-      const yScale = d3.scaleLinear().domain(yExtent(series)); 
-  const series2 = fc
-    .seriesCanvasArea()
-    .xScale(xScale)
-    .yScale(yScale)
-    .crossValue((_, i) => i)
-    .mainValue(d => { console.log(d[0]); return d[0][0];});
- 
-d3.select(container)
-    .on('draw', () => {
-        series2(series);
-    })
-    .on('measure', event => {
-        const { width, height } = event.detail;
-        xScale.range([0, width]);
-        yScale.range([height, 0]);
+      const yScale = d3.scaleLinear().domain(yDomain(data));
 
-        const ctx = container.querySelector('canvas').getContext('2d');
-        series2.context(ctx);
-    });
-
-container.requestRedraw();
-      /*
-      // Use a band scale, which provides the bandwidth value to the grouped
-      // series via fc.autobandwidth
-      
-
-
-
-      const groupedSeries = fc.seriesSvgBar();
-
-      const color = d3.scaleOrdinal(d3.schemeCategory10);
-
-      // Create the grouped series
-      const groupedBar = fc
-        .seriesSvgGrouped(groupedSeries)
+      // Create the renderer
+      const elderRay = votesGraph()
         .xScale(xScale)
-        .yScale(yScale)
-        .align('left')
-        .crossValue(d => d[0])
-        .mainValue((_, i) => i)
-        .decorate((sel, _, index) => {
-          sel.enter()
-            .select('path')
-            .attr('fill', () => color(index));
-        });
+        .yScale(yScale);
 
-     
+      // Add it to the container
+      const container = document.querySelector('d3fc-svg');
 
       d3.select(container)
         .on('draw', () => {
           d3.select(container)
             .select('svg')
-            .datum(series)
-            .call(fc.autoBandwidth(groupedBar));
+            .datum(data)
+            .call(elderRay);
         })
         .on('measure', event => {
           const { width, height } = event.detail;
           xScale.range([0, width]);
-          if (height > 0) {
           yScale.range([height, 0]);
-          } else {
-            yScale.range([500, 0]);
-          }
         });
 
       container.requestRedraw();
-      */
 
-      /*
-
-      let svg = d3.select("svg"),
-        yScale = d3.scaleLinear().range([0, 500]),
-        bandScale = d3.scaleBand();
-
-      let g = svg.append("g")
-        .attr("transform", "translate(" + 200 + "," + 700 + ")");
- 
-      var prevDay;
-     
-      g.append("g")
-        .call(d3.axisBottom(xScale).orient("bottom").ticks(numberOfDays));
-      svg.data(data)
-        .join('rect')
-        .attr('x', function (d) {
-          return bandScale(d.upvotes);
-        })
-        .attr('width', bandScale.bandwidth())
-        .attr('height', function (d) {
-          return d.value;
-        });
-        */
 
     });
     /*
-  let zoom = d3.zoom().on('zoom', function (e) {
-    d3.select('svg g')
-      .attr('transform', e.transform);
-  });
+let zoom = d3.zoom().on('zoom', function (e) {
+d3.select('svg g')
+.attr('transform', e.transform);
+});
 
-  d3.select('d3fc-svg')
-    .call(zoom);
+d3.select('d3fc-svg')
+.call(zoom);
 */
 </script>
 {% endblock %}

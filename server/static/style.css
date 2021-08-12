@@ -1,7 +1,21 @@
 .main-wrapper {
-    min-height: 90vh;  
+    min-height: 90vh;
 }
 
-d3fc-canvas {
+d3fc-svg {
     min-height: 90vh;
+}
+
+.upvotes,
+.upvotes .bar {
+    stroke: green;
+    fill: green;
+    fill-opacity: 1.0;
+}
+
+.downvotes,
+.downvotes .bar {
+    stroke: red;
+    fill: red;
+    fill-opacity: 1.0;
 }
