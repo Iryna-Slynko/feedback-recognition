@@ -2,6 +2,7 @@ from datetime import date
 from server import db
 from werkzeug.security import generate_password_hash
 
+
 class User(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
@@ -26,14 +27,14 @@ class Client(db.Model):
     location_id = db.Column(db.Integer)
 
     def set_token(self, token):
-        self.token =  generate_password_hash(token)
+        self.token = generate_password_hash(token)
         self.token_start = token[0:3]
 
     def masked_token(self):
         return self.token_start + '*****'
 
     def __repr__(self):
-        return '<Client {}>'.format(self.client)   
+        return '<Client {}>'.format(self.client)
 
 
 class Vote(db.Model):
@@ -44,7 +45,7 @@ class Vote(db.Model):
 
     def __repr__(self):
         return '<Vote {}>'.format(self.vote_id)
-    
+
 
 class VoteDaily(db.Model):
     upvotes = db.Column(db.Integer)
@@ -56,8 +57,8 @@ class VoteDaily(db.Model):
     def serialize(self):
         """Return object data in easily serializable format"""
         return {
-            'location_id'   : self.location_id,
-            'date'          : self.date.isoformat(),
-            'upvotes'       : self.upvotes,
-            'downvotes'     : self.downvotes
-       }
+            'location_id': self.location_id,
+            'date': self.date.isoformat(),
+            'upvotes': self.upvotes,
+            'downvotes': self.downvotes
+        }

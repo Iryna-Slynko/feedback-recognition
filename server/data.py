@@ -1,13 +1,9 @@
-import functools
-
 from flask import (
-    Blueprint, flash, g, jsonify, make_response,
-    redirect, render_template, request, url_for
+    Blueprint, jsonify, make_response,
+    render_template
 )
-from werkzeug.exceptions import abort
 
 from server.auth import login_required
-from server import db
 from server.models import VoteDaily
 
 bp = Blueprint('data', __name__, url_prefix='/data')
