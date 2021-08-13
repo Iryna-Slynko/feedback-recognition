@@ -3,6 +3,7 @@ import json
 from json import JSONEncoder
 import numpy
 from recognition.contour_extractor import extract_contours
+from recognition.decider import Decider
 
 capture = cv.VideoCapture(0)
 
@@ -43,28 +44,31 @@ while True:
     diff = cv.absdiff(bgMask.astype("uint8"), getImage(image))
     contours = extract_contours(diff)
     if len(contours) > 0:
-        drawing = image.copy()
-        hull_list = []
+        # drawing = image.copy()
+        #hull_list = []
         big_hull_list = []
         for contour in contours:
-            if len(contour) > 200:
+            if len(contour) > 150:
                 hull = cv.convexHull(contour)
                 big_hull_list.append(hull)
-            elif len(contour) > 50:
-                hull = cv.convexHull(contour)
-                hull_list.append(hull)
+        #    elif len(contour) > 50:
+        #        hull = cv.convexHull(contour)
+        #        hull_list.append(hull)
+        decider = Decider(big_hull_list)
+        # cv.drawContours(drawing, hull_list, -1, (0, 0, 255))
+        # cv.drawContours(drawing, big_hull_list, -1, (255, 0, 0))
 
-        colour = ()
-
-        cv.drawContours(drawing, hull_list, -1, (0, 0, 255))
-        cv.drawContours(drawing, big_hull_list, -1, (255, 0, 0))
-        # if (len(big_hull_list) > 2):
-        #    encodedNumpyData = json.dumps(hull_list, cls=NumpyArrayEncoder)
-        #    print(encodedNumpyData)
-        #    print("*****")
-
-        cv.imshow('Contours', drawing)
-    cv.imshow('Video', image)
+        # cv.imshow('Contours', drawing)
+        if decider.is_decided():
+            text = "Thanks for"
+            if decider.is_upvote():
+                text += " upvoting"
+            else:
+                text += " downvoting"
+            cv.putText(image, text=text, org=(100, 400),
+                       fontFace=cv.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(57, 127, 127),
+                       thickness=2, lineType=cv.LINE_AA)
+    window = cv.imshow('Video', image)
 
     keyboard = cv.waitKey(30)
     if keyboard in (ord('q'), ord('Q'), 27):
