@@ -28,7 +28,7 @@ def getBackground():
     return background
 
 
-bgMask = getBackground()
+bg_mask = getBackground()
 
 
 class NumpyArrayEncoder(JSONEncoder):
@@ -41,11 +41,11 @@ class NumpyArrayEncoder(JSONEncoder):
 while True:
     _, image = capture.read()
 
-    diff = cv.absdiff(bgMask.astype("uint8"), getImage(image))
+    diff = cv.absdiff(bg_mask.astype("uint8"), getImage(image))
     contours = extract_contours(diff)
     if len(contours) > 0:
         # drawing = image.copy()
-        #hull_list = []
+        # hull_list = []
         big_hull_list = []
         for contour in contours:
             if len(contour) > 150:
