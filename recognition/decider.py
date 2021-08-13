@@ -5,15 +5,15 @@ class Decider:
         self.__process__(np_array)
 
     def __process__(self, np_array):
-        if (len(np_array) < 2):
+        if len(np_array) < 2:
             self.decided = False
             return
         thumb_area = np_array[0]
         palm_area = np_array[0]
         for block in np_array:
-            if (len(block) > len(palm_area)):
+            if len(block) > len(palm_area):
                 palm_area = block
-            elif (len(block) < len(thumb_area)):
+            elif len(block) < len(thumb_area):
                 thumb_area = block
 
         def give_me_center(block):

@@ -12,7 +12,7 @@ migrate = Migrate(app, db)
 
 from server import auth, user, data, client
 
-app.config['SECRET_KEY'] = 'secret key here'
+app.config["SECRET_KEY"] = "secret key here"
 db.init_app(app)
 app.register_blueprint(auth.bp)
 
@@ -20,7 +20,7 @@ app.register_blueprint(user.bp)
 app.register_blueprint(data.bp)
 app.register_blueprint(client.bp)
 
-@app.route('/')
-def index():
-    return 'Hello, World!'
 
+@app.route("/")
+def index():
+    return "Hello, World!"

@@ -12,15 +12,15 @@ from server import db
 
 
 # revision identifiers, used by Alembic.
-revision = '74218a1b3732'
-down_revision = 'c37edd430cda'
+revision = "74218a1b3732"
+down_revision = "c37edd430cda"
 branch_labels = None
 depends_on = None
 
 
 def upgrade():
-    u = User(username='admin', role='admin')
-    u.set_password('secret')
+    u = User(username="admin", role="admin")
+    u.set_password("secret")
     db.session.add(u)
     db.session.commit()
 

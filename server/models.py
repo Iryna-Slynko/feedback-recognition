@@ -13,10 +13,10 @@ class User(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def is_admin(self):
-        return self.role == 'admin'
+        return self.role == "admin"
 
     def __repr__(self):
-        return '<User {}>'.format(self.username)
+        return "<User {}>".format(self.username)
 
 
 class Client(db.Model):
@@ -31,20 +31,20 @@ class Client(db.Model):
         self.token_start = token[0:3]
 
     def masked_token(self):
-        return self.token_start + '*****'
+        return self.token_start + "*****"
 
     def __repr__(self):
-        return '<Client {}>'.format(self.client)
+        return "<Client {}>".format(self.client)
 
 
 class Vote(db.Model):
     vote_id = db.Column(db.Integer, primary_key=True)
     upvote = db.Column(db.Boolean)
     created = db.Column(db.Date, index=True, default=date.today)
-    client_id = db.Column(db.Integer, db.ForeignKey('client.client_id'))
+    client_id = db.Column(db.Integer, db.ForeignKey("client.client_id"))
 
     def __repr__(self):
-        return '<Vote {}>'.format(self.vote_id)
+        return "<Vote {}>".format(self.vote_id)
 
 
 class VoteDaily(db.Model):
@@ -57,8 +57,8 @@ class VoteDaily(db.Model):
     def serialize(self):
         """Return object data in easily serializable format"""
         return {
-            'location_id': self.location_id,
-            'date': self.date.isoformat(),
-            'upvotes': self.upvotes,
-            'downvotes': self.downvotes
+            "location_id": self.location_id,
+            "date": self.date.isoformat(),
+            "upvotes": self.upvotes,
+            "downvotes": self.downvotes,
         }

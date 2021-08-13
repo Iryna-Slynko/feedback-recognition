@@ -5,8 +5,9 @@ def extract_contours(diff):
     threshold = 29
     canny_output = cv.Canny(diff, threshold, threshold * 2)
 
-    return filter_contours(cv.findContours(
-        canny_output, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE))
+    return filter_contours(
+        cv.findContours(canny_output, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
+    )
 
 
 def filter_contours(pair):

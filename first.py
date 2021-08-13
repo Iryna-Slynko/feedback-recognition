@@ -65,13 +65,20 @@ while True:
                 text += " upvoting"
             else:
                 text += " downvoting"
-            cv.putText(image, text=text, org=(100, 400),
-                       fontFace=cv.FONT_HERSHEY_SIMPLEX, fontScale=1, color=(57, 127, 127),
-                       thickness=2, lineType=cv.LINE_AA)
-    window = cv.imshow('Video', image)
+            cv.putText(
+                image,
+                text=text,
+                org=(100, 400),
+                fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                fontScale=1,
+                color=(57, 127, 127),
+                thickness=2,
+                lineType=cv.LINE_AA,
+            )
+    window = cv.imshow("Video", image)
 
     keyboard = cv.waitKey(30)
-    if keyboard in (ord('q'), ord('Q'), 27):
+    if keyboard in (ord("q"), ord("Q"), 27):
         break
 
 capture.release()
