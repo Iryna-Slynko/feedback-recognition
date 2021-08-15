@@ -77,16 +77,48 @@ class Decider:
                 )
             )
             self.decided = False
+            return
+
+        upvote_patterns = 0
+        downvote_patterns = 0
+        if (dimensions[self.thumb_area].y2 + dimensions[self.thumb_area].y1) / 2 > (
+            dimensions[self.palm_area].y2 + dimensions[self.palm_area].y1
+        ) / 2:
+            upvote_patterns += 1
+        else:
+            downvote_patterns += 1
+
+        if dimensions[self.thumb_area].y1 < dimensions[self.palm_area].y1:
+            higher = 0
+            lower = 0
+            total = 0
+            for dimension in dimensions:
+                if dimension not in (
+                    dimensions[self.thumb_area],
+                    dimensions[self.palm_area],
+                ):
+                    total += 1
+                    if dimensions[self.thumb_area].y2 > dimension.y2:
+                        higher += 1
+                    if dimensions[self.thumb_area].y1 < dimension.y1:
+                        lower += 1
+            if higher + lower < total * 1.5:
+                if higher > lower + 1 + total * 0.2:
+                    upvote_patterns += 1
+                elif lower > higher + 1 + total * 0.2:
+                    downvote_patterns += 1
         if dimensions[self.thumb_area].y2 > dimensions[self.palm_area].y2:
-            self.upvote = True  # thumb_y < palm_y
-        elif dimensions[self.thumb_area].y1 < dimensions[self.palm_area].y1:
+            downvote_patterns += 1
+        if dimensions[self.thumb_area].y1 < dimensions[self.palm_area].y1:
+            upvote_patterns += 1
+
+        rules_count = 3
+        if upvote_patterns > rules_count / 2:
+            self.upvote = True
+        elif downvote_patterns > rules_count / 2:
             self.upvote = False
         else:
-            print(
-                "Position is too hard thumb {} palm {}",
-                dimensions[self.thumb_area],
-                dimensions[self.palm_area],
-            )
+
             self.decided = False
 
     def is_upvote(self):
