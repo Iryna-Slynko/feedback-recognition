@@ -86,6 +86,30 @@ while True:
                 thickness=2,
                 lineType=cv.LINE_AA,
             )
+        else:
+            cv.putText(
+                image,
+                text="Can not recognize please move your hand",
+                org=(100, 400),
+                fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                fontScale=1,
+                color=(127, 127, 127),
+                thickness=2,
+                lineType=cv.LINE_AA,
+            )
+
+    else:
+        cv.putText(
+            image,
+            text="Waiting for input",
+            org=(100, 400),
+            fontFace=cv.FONT_HERSHEY_SIMPLEX,
+            fontScale=1,
+            color=(127, 127, 127),
+            thickness=2,
+            lineType=cv.LINE_AA,
+        )
+
     window = cv.imshow("Video", image)
 
     keyboard = cv.waitKey(30)
