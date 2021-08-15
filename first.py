@@ -1,5 +1,4 @@
 import cv2 as cv
-import json
 from json import JSONEncoder
 import numpy
 from recognition.contour_extractor import extract_contours
@@ -8,7 +7,7 @@ from recognition.decider import Decider
 capture = cv.VideoCapture(0)
 
 
-def getImage(inputFrame=None):
+def get_image(inputFrame=None):
     while inputFrame is None:
         _, inputFrame = capture.read()
     gray = cv.cvtColor(inputFrame, cv.COLOR_BGR2GRAY)
@@ -16,19 +15,26 @@ def getImage(inputFrame=None):
     return gray
 
 
-def getBackground():
+def get_background():
     while not capture.read():
         print("Waiting")
-    background = getImage().copy().astype("float")
-    frameCount = 0
-    while frameCount < 30:
-        cv.accumulateWeighted(getImage(), background, 0.5)
-        frameCount += 1
+    background = get_image().copy().astype("float")
+    frame_count = 0
+    while frame_count < 30:
+        cv.accumulateWeighted(get_image(), background, 0.5)
+        frame_count += 1
 
     return background
 
 
-bg_mask = getBackground()
+def print_info(info):
+    import json
+
+    encodedNumpyData = json.dumps(info, cls=NumpyArrayEncoder)
+    print(encodedNumpyData)
+
+
+bg_mask = get_background()
 
 
 class NumpyArrayEncoder(JSONEncoder):
@@ -41,7 +47,7 @@ class NumpyArrayEncoder(JSONEncoder):
 while True:
     _, image = capture.read()
 
-    diff = cv.absdiff(bg_mask.astype("uint8"), getImage(image))
+    diff = cv.absdiff(bg_mask.astype("uint8"), get_image(image))
     contours = extract_contours(diff)
     if len(contours) > 0:
         # drawing = image.copy()
