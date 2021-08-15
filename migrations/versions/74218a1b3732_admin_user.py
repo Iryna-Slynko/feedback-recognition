@@ -5,8 +5,6 @@ Revises: c37edd430cda
 Create Date: 2021-06-29 00:21:38.881921
 
 """
-from alembic import op
-import sqlalchemy as sa
 from server.models import User
 from server import db
 

@@ -6,7 +6,6 @@ Create Date: 2021-07-25 22:48:56.612319
 
 """
 from alembic import op
-import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
@@ -19,7 +18,7 @@ depends_on = None
 def upgrade():
     op.execute(
         """
-        CREATE VIEW vote_daily AS 
+        CREATE VIEW vote_daily AS
         SELECT  SUM(CASE WHEN v.upvote THEN 1 ELSE 0 END) as upvotes, 
                 SUM(CASE WHEN v.upvote THEN 0 ELSE 1 END) as downvotes,
                 DATE(v.created) as 'date', c.location_id

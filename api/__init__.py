@@ -20,10 +20,10 @@ def create_app():
 
     @app.route("/feedback", methods=["POST"])
     def add_feedback():
-        if not request.json or not "upvote" in request.json:
+        if not request.json or "upvote" not in request.json:
             return (jsonify({"error": "wrong_request"}), 400)
 
-        if not "client" in request.json or not "token" in request.json:
+        if not "client" in request.json or "token" not in request.json:
             return (jsonify({"error": "not_authorised"}), 403)
 
         c = Client.query.filter_by(client=request.json["client"]).first()
