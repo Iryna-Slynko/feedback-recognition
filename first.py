@@ -34,6 +34,12 @@ def print_info(info):
     print(encodedNumpyData)
 
 
+def draw_hulls(image, hulls, colour):
+    drawing = image.copy()
+    cv.drawContours(drawing, hulls, -1, colour)
+    cv.imshow("Contours", drawing)
+
+
 bg_mask = get_background()
 
 
@@ -50,7 +56,7 @@ while True:
     diff = cv.absdiff(bg_mask.astype("uint8"), get_image(image))
     contours = extract_contours(diff)
     if len(contours) > 0:
-        # drawing = image.copy()
+        #
         # hull_list = []
         big_hull_list = []
         for contour in contours:
@@ -62,9 +68,8 @@ while True:
         #        hull_list.append(hull)
         decider = Decider(big_hull_list)
         # cv.drawContours(drawing, hull_list, -1, (0, 0, 255))
-        # cv.drawContours(drawing, big_hull_list, -1, (255, 0, 0))
+        # draw_hulls(image, big_hull_list, (255, 0, 0))
 
-        # cv.imshow('Contours', drawing)
         if decider.is_decided():
             text = "Thanks for"
             if decider.is_upvote():
