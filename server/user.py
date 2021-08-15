@@ -1,5 +1,4 @@
 from flask import Blueprint, flash, redirect, render_template, request, url_for
-from werkzeug.security import generate_password_hash
 from server.auth import admin_required
 from server import db
 from server.models import User
@@ -19,7 +18,7 @@ def create():
             error = "Username is not set"
         elif not password:
             error = "Password is not set"
-        elif role != "user" and role != "admin":
+        elif role not in ("user", "admin"):
             error = "Incorrect role"
         elif User.query.filter_by(username=username).first() is not None:
             error = "User already exists."

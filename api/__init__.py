@@ -23,7 +23,7 @@ def create_app():
         if not request.json or "upvote" not in request.json:
             return (jsonify({"error": "wrong_request"}), 400)
 
-        if not "client" in request.json or "token" not in request.json:
+        if "client" not in request.json or "token" not in request.json:
             return (jsonify({"error": "not_authorised"}), 403)
 
         c = Client.query.filter_by(client=request.json["client"]).first()
