@@ -23,6 +23,9 @@ class Dimension:
     def wider(self, other_dimension):
         return self.aspect_ratio > other_dimension.aspect_ratio
 
+    def __str__(self):
+        return "{} {} {} {}".format(self.x1, self.y1, self.x2, self.y2)
+
 
 class Decider:
     def __init__(self, np_array):
