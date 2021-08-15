@@ -1,7 +1,7 @@
 """clients table
 
 Revision ID: c1f12c0ad3ca
-Revises: 
+Revises:
 Create Date: 2021-06-22 00:21:03.987747
 
 """
