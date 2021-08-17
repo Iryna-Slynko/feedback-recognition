@@ -1,0 +1,23 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+types-click = "==7.1.1"
+typing-extensions = "==3.10.0.0"
+wrapt = "==1.12.1"
+Flask = "==2.0.1"
+Flask-SQLAlchemy = "*"
+types-Flask = "==1.1.0"
+types-Jinja2 = "==2.11.1"
+types-MarkupSafe = "==1.1.1"
+types-Werkzeug = "==1.0.1"
+Werkzeug = "==2.0.1"
+opencv-python = "*"
+flask-migrate = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.9"
