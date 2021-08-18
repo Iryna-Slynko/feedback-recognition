@@ -97,3 +97,17 @@ class TestRepeatedDecider(unittest.TestCase):
         decider.analyze([])
         decider.analyze([])
         self.assertTrue(decider.is_decided())
+
+    def test_decided_if_result_of_recent_latest_undecided(
+        self,
+    ):
+        decider = RepeatedDecider()
+        decider.__decider_class__ = MockUndecidedDecider
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        self.assertFalse(decider.is_decided())
