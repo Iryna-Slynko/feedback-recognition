@@ -13,16 +13,28 @@ class RepeatedDecider:
         self.__decisions__.append(single_decider.is_upvote())
 
     def is_decided(self):
-        if self.__analyzed_count__ >= 4:
-            return True
-        return False
+        if self.__analyzed_count__ < 4:
+            return False
+
+        positive = 0
+        negative = 0
+        for decision in self.__recent_decisions__():
+            if decision:
+                positive += 1
+            else:
+                negative += 1
+
+        return abs(positive - negative) > 2
 
     def is_upvote(self):
         votes = 0
-        for decision in self.__decisions__:
+        for decision in self.__recent_decisions__():
             if decision:
                 votes += 1
         return votes > 0 and (len(self.__decisions__) / votes) <= 2
 
     def decided_result(self):
         return True
+
+    def __recent_decisions__(self):
+        return self.__decisions__[-7:]

@@ -66,3 +66,34 @@ class TestRepeatedDecider(unittest.TestCase):
         decider.__decider_class__ = MockDownvoteDecider
         decider.analyze([])
         self.assertTrue(decider.is_upvote())
+
+    def test_undecided_if_result_of_seven_latest_is_mixed(self):
+        decider = RepeatedDecider()
+        decider.__decider_class__ = MockUpvoteDecider
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.__decider_class__ = MockDownvoteDecider
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        self.assertFalse(decider.is_decided())
+
+    def test_decided_if_result_of_more_than_seven_latest_is_mixed_but_last_seven_are_stable(
+        self,
+    ):
+        decider = RepeatedDecider()
+        decider.__decider_class__ = MockUpvoteDecider
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.__decider_class__ = MockDownvoteDecider
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        decider.analyze([])
+        self.assertTrue(decider.is_decided())
