@@ -26,12 +26,13 @@ pipenv run flask run
 1. Run command:
 
     ```bash
-    curl -X POST http://localhost:5000/feedback -d '{"upvote":true, "client":"client21", "token":"DV6fxJZt86SQ8E3JiTOwTrj0emYcYV7psOfpkP0h"}' -H 'Content-Type: application/json'
+    curl -X POST http://localhost:5000/feedback -d '{"upvote":true, "client":"client3", "token":"zC92PlhJ1rbwbwsdbNA6aejcOsSXszaCBqZ8jD6z"}' -H 'Content-Type: application/json'
     ```
 
-## Client size
+## Client side
 
 1. Install opencv
+
     ```bash
-        pipenv run python first.py
+       CLIENT_ID=client3 CLIENT_SECRET=zC92PlhJ1rbwbwsdbNA6aejcOsSXszaCBqZ8jD6z API_ADDRESS=https://apiserver.privatedomain.com/feedback pipenv run python first.py
     ```

@@ -2,9 +2,15 @@ import cv2 as cv
 from json import JSONEncoder
 import numpy
 from recognition.contour_extractor import extract_contours
-from recognition.decider import Decider
+from recognition.repeated_decider import RepeatedDecider
+import os
+from client.api_client import ApiClient
+
 
 capture = cv.VideoCapture(0)
+apiClient = ApiClient(
+    os.environ["API_ADDRESS"], os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]
+)
 
 
 def get_image(inputFrame=None):
@@ -40,6 +46,21 @@ def draw_hulls(image, hulls, colour):
     cv.imshow("Contours", drawing)
 
 
+def debug_output(image, big_hull_list):
+    from recognition.decider import Decider
+
+    decider = Decider(big_hull_list)
+    if decider.is_decided():
+        if decider.is_upvote():
+            cv.drawContours(image, [big_hull_list[decider.palm_area]], -1, (0, 0, 255))
+            cv.drawContours(image, [big_hull_list[decider.thumb_area]], -1, (0, 255, 0))
+        else:
+            cv.drawContours(image, [big_hull_list[decider.palm_area]], -1, (0, 0, 255))
+            cv.drawContours(
+                image, [big_hull_list[decider.thumb_area]], -1, (255, 0, 255)
+            )
+
+
 bg_mask = get_background()
 
 
@@ -50,9 +71,9 @@ class NumpyArrayEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
+decider = RepeatedDecider()
 while True:
     _, image = capture.read()
-
     diff = cv.absdiff(bg_mask.astype("uint8"), get_image(image))
     contours = extract_contours(diff)
     if len(contours) > 0:
@@ -66,16 +87,33 @@ while True:
         #    elif len(contour) > 50:
         #        hull = cv.convexHull(contour)
         #        hull_list.append(hull)
-        decider = Decider(big_hull_list)
+        decider.analyze(big_hull_list)
         # cv.drawContours(drawing, hull_list, -1, (0, 0, 255))
         # draw_hulls(image, big_hull_list, (255, 0, 0))
-
         if decider.is_decided():
+            apiClient.record(decider.is_upvote())
+        elif decider.has_input():
             text = "Thanks for"
             if decider.is_upvote():
                 text += " upvoting"
+                """
+                cv.drawContours(
+                    image, [big_hull_list[decider.palm_area]], -1, (0, 0, 255)
+                )
+                cv.drawContours(
+                    image, [big_hull_list[decider.thumb_area]], -1, (0, 255, 0)
+                )
+                """
             else:
                 text += " downvoting"
+                """
+                cv.drawContours(
+                    image, [big_hull_list[decider.palm_area]], -1, (0, 0, 255)
+                )
+                cv.drawContours(
+                    image, [big_hull_list[decider.thumb_area]], -1, (255, 0, 255)
+                )
+                """
             cv.putText(
                 image,
                 text=text,
@@ -97,6 +135,7 @@ while True:
                 thickness=2,
                 lineType=cv.LINE_AA,
             )
+        debug_output(image, big_hull_list)
 
     else:
         cv.putText(

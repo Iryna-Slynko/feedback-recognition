@@ -16,6 +16,7 @@ types-Werkzeug = "==1.0.1"
 Werkzeug = "==2.0.1"
 opencv-python = "*"
 flask-migrate = "*"
+requests = "*"
 
 [dev-packages]
 
