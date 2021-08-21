@@ -76,7 +76,19 @@ while True:
     _, image = capture.read()
     diff = cv.absdiff(bg_mask.astype("uint8"), get_image(image))
     contours = extract_contours(diff)
-    if len(contours) > 0:
+    if decider.is_reseting():
+        cv.putText(
+            image,
+            text="Thank you for your feedback",
+            org=(100, 400),
+            fontFace=cv.FONT_HERSHEY_SIMPLEX,
+            fontScale=1,
+            color=(0, 127, 127),
+            thickness=2,
+            lineType=cv.LINE_AA,
+        )
+        decider.analyze([])
+    elif len(contours) > 0:
         #
         # hull_list = []
         big_hull_list = []
@@ -92,6 +104,7 @@ while True:
         # draw_hulls(image, big_hull_list, (255, 0, 0))
         if decider.is_decided():
             apiClient.record(decider.is_upvote())
+            decider.reset()
         elif decider.has_input():
             text = "Thanks for"
             if decider.is_upvote():

@@ -111,3 +111,29 @@ class TestRepeatedDecider(unittest.TestCase):
         decider.analyze([])
         decider.analyze([])
         self.assertFalse(decider.is_decided())
+
+    def test_refresh_resets_decision_and_skips_hundred_next_ones(self):
+        decider = RepeatedDecider()
+        decider.__decider_class__ = MockUpvoteDecider
+        for _ in range(5):
+            decider.analyze([])
+        self.assertTrue(decider.is_decided())
+        decider.reset()
+        for _ in range(100):
+            decider.analyze([])
+            self.assertFalse(decider.is_decided())
+        for _ in range(5):
+            decider.analyze([])
+        self.assertTrue(decider.is_decided())
+
+    def test_refresh_resets_decision_skips_hundred_next_ones_and_shows_that_it_is_not_analyzing(
+        self,
+    ):
+        decider = RepeatedDecider()
+        decider.__decider_class__ = MockUpvoteDecider
+        decider.reset()
+        for _ in range(99):
+            decider.analyze([])
+            self.assertTrue(decider.is_reseting())
+        decider.analyze([])
+        self.assertFalse(decider.is_reseting())

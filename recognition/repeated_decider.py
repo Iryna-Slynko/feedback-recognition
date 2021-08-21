@@ -12,16 +12,17 @@ class RepeatedDecider:
         self.__decider_class__ = Decider
         self.__analyzed_count__ = 0
         self.__decisions__ = []
+        self.reset_count = 0
 
     def analyze(self, np_array):
+        if self.reset_count > 0:
+            self.reset_count -= 1
+            return
         self.__analyzed_count__ += 1
         single_decider = self.__decider_class__(np_array)
         self.__decisions__.append(
             Decision(single_decider.is_decided(), single_decider.is_upvote())
         )
-        if single_decider.is_decided():
-            self.thumb_area = single_decider.thumb_area
-            self.palm_area = single_decider.palm_area
 
     def is_decided(self):
         decided = 0
@@ -59,8 +60,9 @@ class RepeatedDecider:
     def __recent_decisions__(self):
         return self.__decisions__[-7:]
 
-    def __thumb_area(self):
-        return self.thumb_area
+    def reset(self):
+        self.reset_count = 100
+        self.__decisions__ = []
 
-    def __palm_area(self):
-        return self.palm_area
+    def is_reseting(self):
+        return self.reset_count > 0
