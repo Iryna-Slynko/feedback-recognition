@@ -12,11 +12,11 @@ class ApiClient:
         headers = CaseInsensitiveDict()
         headers["Content-Type"] = "application/json"
         requests.post(
-            self.address,
+            self.__address__,
             params={
-                client: self.__client_id__,
-                token: self.__client_token__,
-                upvote: result,
+                "client": self.__client_id__,
+                "token": self.__client_token__,
+                "upvote": result,
             },
             headers=headers,
         )
