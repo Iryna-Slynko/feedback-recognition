@@ -3,11 +3,18 @@ from json import JSONEncoder
 import numpy
 from recognition.contour_extractor import extract_contours
 from recognition.repeated_decider import RepeatedDecider
+from recognition.decider2 import Decider
 import os
 from client.api_client import ApiClient
+import numpy as np
 
 
 capture = cv.VideoCapture(0)
+width = 1920
+height = 1080
+capture.set(cv.CAP_PROP_FOURCC, cv.VideoWriter_fourcc("M", "J", "P", "G"))
+capture.set(cv.CAP_PROP_FRAME_WIDTH, width)
+capture.set(cv.CAP_PROP_FRAME_HEIGHT, height)
 apiClient = ApiClient(
     os.environ["API_ADDRESS"], os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]
 )
@@ -16,9 +23,13 @@ apiClient = ApiClient(
 def get_image(inputFrame=None):
     while inputFrame is None:
         _, inputFrame = capture.read()
-    gray = cv.cvtColor(inputFrame, cv.COLOR_BGR2GRAY)
-    # gray = cv.GaussianBlur(gray, (11, 11), 10)
-    return gray
+    hsv_image = cv.cvtColor(inputFrame, cv.COLOR_BGR2HSV)
+    mask = cv.inRange(
+        hsv_image,
+        np.array([0, 50, 120], dtype=np.uint8),
+        np.array([180, 150, 250], dtype=np.uint8),
+    )
+    return mask
 
 
 def get_background():
@@ -71,11 +82,47 @@ class NumpyArrayEncoder(JSONEncoder):
         return JSONEncoder.default(self, obj)
 
 
+def get_contour_center(contour):
+    """Calculates the center of the contour"""
+    M = cv.moments(contour)
+    cx = -1
+    cy = -1
+    if M["m00"] != 0:
+        cx = int(M["m10"] / M["m00"])
+        cy = int(M["m01"] / M["m00"])
+    return cx, cy
+
+
 decider = RepeatedDecider()
 while True:
     _, image = capture.read()
     diff = cv.absdiff(bg_mask.astype("uint8"), get_image(image))
-    contours = extract_contours(diff)
+    contours = extract_contours(get_image(image))
+    rgb_image = image.copy()
+    biggest = None
+    biggest_area = 130
+    biggest_radius = 0
+    for c in contours:
+        area = cv.contourArea(c)
+        perimeter = cv.arcLength(c, True)
+        ((x, y), radius) = cv.minEnclosingCircle(c)
+        if area > biggest_area:
+            biggest_area = area
+            biggest = c
+            biggest_radius = radius
+
+    if biggest is not None:
+        cx, cy = get_contour_center(biggest)
+        cv.circle(rgb_image, (cx, cy), (int)(biggest_radius), (0, 0, 255), 1)
+        hull = cv.convexHull(biggest)
+        cv.drawContours(rgb_image, [hull], -1, (255, 0, 0), 1)
+        for i, point in enumerate(hull):
+            cv.circle(
+                rgb_image, point[0], 3, ((i * 10) % 255, (100 + i * 20) % 255, 0), 1
+            )
+        cv.drawContours(rgb_image, [biggest], -1, (150, 250, 150), 1)
+    cv.imshow("RGB Image Contours", rgb_image)
+
     if decider.is_reseting():
         cv.putText(
             image,
@@ -89,20 +136,24 @@ while True:
         )
         decider.analyze([])
     elif len(contours) > 0:
-        #
-        # hull_list = []
-        big_hull_list = []
-        for contour in contours:
-            if len(contour) > 150:
-                hull = cv.convexHull(contour)
-                big_hull_list.append(hull)
-        #    elif len(contour) > 50:
-        #        hull = cv.convexHull(contour)
-        #        hull_list.append(hull)
-        decider.analyze(big_hull_list)
+        decider.analyze(contours)
+
         # cv.drawContours(drawing, hull_list, -1, (0, 0, 255))
-        # draw_hulls(image, big_hull_list, (255, 0, 0))
         if decider.is_decided():
+            white_rect = np.ones(image.shape, dtype=np.uint8) * 255
+            cv.addWeighted(white_rect, 0.5, image, 0.5, 1.0)
+            cv.putText(
+                image,
+                text="Thank you for your feedback",
+                org=(100, 400),
+                fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                fontScale=1,
+                color=(0, 127, 127),
+                thickness=2,
+                lineType=cv.LINE_AA,
+            )
+            window = cv.imshow("Video", image)
+
             apiClient.record(decider.is_upvote())
             decider.reset()
         elif decider.has_input():
@@ -148,7 +199,6 @@ while True:
                 thickness=2,
                 lineType=cv.LINE_AA,
             )
-        debug_output(image, big_hull_list)
 
     else:
         cv.putText(

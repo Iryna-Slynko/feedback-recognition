@@ -1,4 +1,4 @@
-from recognition.decider import Decider
+from recognition.decider2 import Decider
 
 
 class Decision:
