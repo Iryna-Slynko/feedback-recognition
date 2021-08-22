@@ -72,13 +72,13 @@ class Decider:
                 middle_top_y = point[1]
                 middle_top_x = point[0]
 
-        if (left_bottom_y - middle_bottom_y) > 80 or (
-            left_bottom_y - middle_bottom_y
+        if (middle_bottom_y - left_bottom_y) > 80 or (
+            middle_bottom_y - right_bottom_y
         ) > 80:
             self.upvote = False
             self.decided = True
 
-        if (middle_top_y - left_top_y) > 80 or (middle_top_y - right_top_y) > 80:
+        if (left_top_y - middle_top_y) > 80 or (right_top_y - middle_top_y) > 80:
             if self.upvote:
                 pass
             else:
