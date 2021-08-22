@@ -10,11 +10,17 @@ import numpy as np
 
 
 capture = cv.VideoCapture(0)
-width = 1920
-height = 1080
-capture.set(cv.CAP_PROP_FOURCC, cv.VideoWriter_fourcc("M", "J", "P", "G"))
+
+width = 1280
+height = 720
+"""
+width = 1024
+height = 576
+"""
+# capture.set(cv.CAP_PROP_FOURCC, cv.VideoWriter_fourcc("M", "J", "P", "G"))
 capture.set(cv.CAP_PROP_FRAME_WIDTH, width)
 capture.set(cv.CAP_PROP_FRAME_HEIGHT, height)
+
 apiClient = ApiClient(
     os.environ["API_ADDRESS"], os.environ["CLIENT_ID"], os.environ["CLIENT_SECRET"]
 )

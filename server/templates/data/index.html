@@ -18,6 +18,12 @@
         const downvotesBar = fc.autoBandwidth(fc.seriesSvgBar());
         const multi = fc.seriesSvgMulti();
 
+
+        bandScale = d3.scaleBand();
+
+        xScale.domain([new Date(data[0].date), new Date(data[data.length - 1].date)]);
+
+
         const votes = selection => {
 
           upvotesBar
@@ -74,7 +80,9 @@
       const xScale = d3
         .scaleTime()
         .domain(fc.extentDate().accessors([d => d.date])(data));
-
+      const axis = fc.axisBottom(xScale)
+        .tickArguments([10])
+        .tickCenterLabel(true);
       // the elder ray is rendered on its own scale
       const yDomain = fc
         .extentLinear()
@@ -96,7 +104,8 @@
           d3.select(container)
             .select('svg')
             .datum(data)
-            .call(elderRay);
+            .call(elderRay)
+            .call(axis);
         })
         .on('measure', event => {
           const { width, height } = event.detail;
