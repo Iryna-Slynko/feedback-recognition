@@ -37,18 +37,6 @@ def get_image(inputFrame=None):
     return mask
 
 
-def get_background():
-    while not capture.read():
-        print("Waiting")
-    background = get_image().copy().astype("float")
-    frame_count = 0
-    while frame_count < 30:
-        cv.accumulateWeighted(get_image(), background, 0.5)
-        frame_count += 1
-
-    return background
-
-
 def print_info(info):
     import json
 
@@ -77,9 +65,6 @@ def debug_output(image, big_hull_list):
             )
 
 
-bg_mask = get_background()
-
-
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.ndarray):
@@ -98,11 +83,19 @@ def get_contour_center(contour):
     return cx, cy
 
 
+fgbg = cv.createBackgroundSubtractorMOG2()
+for i in range(50):
+    _, image = capture.read()
+
+    fgbg.apply(image)
+
 decider = RepeatedDecider()
 while True:
     _, image = capture.read()
-    diff = cv.absdiff(bg_mask.astype("uint8"), get_image(image))
-    contours = extract_contours(get_image(image))
+
+    noback = fgbg.apply(image, learningRate=0)
+
+    contours = extract_contours(noback)
     rgb_image = image.copy()
     biggest = None
     biggest_area = 130
