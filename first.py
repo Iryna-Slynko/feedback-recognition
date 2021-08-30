@@ -1,12 +1,11 @@
 import cv2 as cv
 from json import JSONEncoder
-import numpy
+import numpy as np
 from recognition.contour_extractor import extract_contours
 from recognition.repeated_decider import RepeatedDecider
 from recognition.decider2 import Decider
 import os
 from client.api_client import ApiClient
-import numpy as np
 
 
 capture = cv.VideoCapture(0)
@@ -83,7 +82,7 @@ bg_mask = get_background()
 
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, numpy.ndarray):
+        if isinstance(obj, np.ndarray):
             return obj.tolist()
         return JSONEncoder.default(self, obj)
 
