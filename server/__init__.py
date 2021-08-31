@@ -1,5 +1,5 @@
 from config import Config
-from flask import Flask
+from flask import redirect, url_for, Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
 
@@ -21,4 +21,4 @@ app.register_blueprint(client.bp)
 
 @app.route("/")
 def index():
-    return "Hello, World!"
+    return redirect(url_for("data.index"))
