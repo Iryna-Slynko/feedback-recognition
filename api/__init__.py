@@ -34,6 +34,6 @@ def create_app():
         )
         db.session.add(v)
         db.session.commit()
-        return jsonify({"created": "ok"})
+        return jsonify({"created": "ok"}, 201)
 
     return app
