@@ -1,5 +1,6 @@
 import requests
 from requests.structures import CaseInsensitiveDict
+import json
 
 
 class ApiClient:
@@ -9,14 +10,15 @@ class ApiClient:
         self.__client_token__ = client_token
 
     def record(self, result):
-        headers = CaseInsensitiveDict()
-        headers["Content-Type"] = "application/json"
-        requests.post(
+
+        resp = requests.post(
             self.__address__,
-            params={
-                "client": self.__client_id__,
-                "token": self.__client_token__,
-                "upvote": result,
-            },
-            headers=headers,
+            data=json.dumps(
+                {
+                    "client": self.__client_id__,
+                    "token": self.__client_token__,
+                    "upvote": result,
+                }
+            ),
+            headers={"Content-Type": "application/json"},
         )
