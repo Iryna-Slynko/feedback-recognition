@@ -1,5 +1,5 @@
 <!doctype html>
-<title>{% block title %}{% endblock %} - </title>
+<title>Feedback recognition - {% block title %}{% endblock %}</title>
 <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
   integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
@@ -8,9 +8,11 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 
 <body>
-  <nav class="navbar navbar-expand-lg">
+  <h1>Feedback Recognition System</h1>
+
+  <nav class="navbar navbar-expand-lg">`
     <div class="container-fluid">
-      
+
       {% if g.user %}
       <ul class="navbar-nav me-auto">
         {% if g.user.is_admin %}
@@ -22,12 +24,10 @@
       </ul>
       {% if g.user %}
       <ul class="navbar-nav">
-      <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Log Out</a>
-        {% else %}
-      <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.login') }}">Log In</a>
-        {% endif %}
+        <li class="nav-item"><a class="nav-link" href="{{ url_for('auth.logout') }}">Log Out</a>
       </ul>
-    
+      {% endif %}
+
     </div>
   </nav>
   <main class="container main-wrapper">
