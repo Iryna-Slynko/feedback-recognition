@@ -96,6 +96,7 @@ while True:
     noback = fgbg.apply(image, learningRate=0)
 
     contours = extract_contours(noback)
+    """
     rgb_image = image.copy()
     biggest = None
     biggest_area = 130
@@ -120,7 +121,7 @@ while True:
             )
         cv.drawContours(rgb_image, [biggest], -1, (150, 250, 150), 1)
     cv.imshow("RGB Image Contours", rgb_image)
-
+    """
     if decider.is_reseting():
         cv.putText(
             image,
@@ -128,7 +129,7 @@ while True:
             org=(100, 400),
             fontFace=cv.FONT_HERSHEY_SIMPLEX,
             fontScale=1,
-            color=(0, 127, 127),
+            color=(0, 140, 255),
             thickness=2,
             lineType=cv.LINE_AA,
         )
@@ -146,7 +147,7 @@ while True:
                 org=(100, 400),
                 fontFace=cv.FONT_HERSHEY_SIMPLEX,
                 fontScale=1,
-                color=(0, 127, 127),
+                color=(0, 140, 255),
                 thickness=2,
                 lineType=cv.LINE_AA,
             )
