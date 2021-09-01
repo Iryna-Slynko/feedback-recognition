@@ -18,7 +18,7 @@ def create():
             error = "Please enter the client name"
         elif not location_id:
             error = "Please enter the location id"
-        elif Client.query.filter_by(client=client_name).first() is not None:
+        elif Client.query.filter_by(client=client_name).count() > 0:
             error = "Client already exists."
         if error is None:
             token = token_urlsafe(30)
@@ -27,7 +27,10 @@ def create():
             db.session.add(c)
             db.session.commit()
             return render_template(
-                "client/show.html", token=token, client_name=client_name
+                "client/show.html",
+                token=token,
+                client_name=client_name,
+                status="created",
             )
 
         flash(error)
@@ -45,5 +48,35 @@ def index():
 @bp.route("/<int:client_id>/update", methods=("GET", "POST"))
 @admin_required
 def update(client_id):
-    client = Client.query(client_id=client_id).first
-    return render_template("client/edit.html", client=client)
+    c = Client.query.filter(Client.client_id == client_id).first()
+    if request.method == "POST":
+        location_id = request.form.get("location_id")
+        client_name = request.form.get("client_name")
+        error = None
+        if not client_name:
+            error = "Please enter the client name"
+        elif not location_id:
+            error = "Please enter the location id"
+        elif (
+            Client.query.filter(
+                Client.client == client_name, Client.client_id != client_id
+            ).count()
+            > 0
+        ):
+            error = "Client already exists."
+        if error is None:
+            token = token_urlsafe(30)
+            c.client = client_name
+            c.location_id = location_id
+            c.set_token(token)
+            db.session.commit()
+            return render_template(
+                "client/show.html",
+                token=token,
+                client_name=client_name,
+                status="updated",
+            )
+
+        flash(error)
+
+    return render_template("client/edit.html", client=c)

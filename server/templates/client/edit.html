@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block header %}
+<h1>{% block title %}Edit Client{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    <input type="hidden" id="client_id" value="{{client.id}}">
+    <label for="client_name">Client Name</label>
+    <input name="client_name" id="client_name" value="{{ client.client }}" required>
+    <label for="location_id">Location</label>
+    <input name="location_id" id="location_id" value="{{ client.location_id }}" required>
+
+    <input type="submit" value="Update">
+</form>
+{% endblock %}
