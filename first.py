@@ -96,32 +96,7 @@ while True:
     noback = fgbg.apply(image, learningRate=0)
 
     contours = extract_contours(noback)
-    """
-    rgb_image = image.copy()
-    biggest = None
-    biggest_area = 130
-    biggest_radius = 0
-    for c in contours:
-        area = cv.contourArea(c)
-        perimeter = cv.arcLength(c, True)
-        ((x, y), radius) = cv.minEnclosingCircle(c)
-        if area > biggest_area:
-            biggest_area = area
-            biggest = c
-            biggest_radius = radius
 
-    if biggest is not None:
-        cx, cy = get_contour_center(biggest)
-        cv.circle(rgb_image, (cx, cy), (int)(biggest_radius), (0, 0, 255), 1)
-        hull = cv.convexHull(biggest)
-        cv.drawContours(rgb_image, [hull], -1, (255, 0, 0), 1)
-        for i, point in enumerate(hull):
-            cv.circle(
-                rgb_image, point[0], 3, ((i * 10) % 255, (100 + i * 20) % 255, 0), 1
-            )
-        cv.drawContours(rgb_image, [biggest], -1, (150, 250, 150), 1)
-    cv.imshow("RGB Image Contours", rgb_image)
-    """
     if decider.is_reseting():
         cv.putText(
             image,
@@ -159,24 +134,8 @@ while True:
             text = "Thanks for"
             if decider.is_upvote():
                 text += " upvoting"
-                """
-                cv.drawContours(
-                    image, [big_hull_list[decider.palm_area]], -1, (0, 0, 255)
-                )
-                cv.drawContours(
-                    image, [big_hull_list[decider.thumb_area]], -1, (0, 255, 0)
-                )
-                """
             else:
                 text += " downvoting"
-                """
-                cv.drawContours(
-                    image, [big_hull_list[decider.palm_area]], -1, (0, 0, 255)
-                )
-                cv.drawContours(
-                    image, [big_hull_list[decider.thumb_area]], -1, (255, 0, 255)
-                )
-                """
             cv.putText(
                 image,
                 text=text,
@@ -190,7 +149,7 @@ while True:
         else:
             cv.putText(
                 image,
-                text="Can not recognize please move your hand",
+                text="Show how are we doing",
                 org=(100, 400),
                 fontFace=cv.FONT_HERSHEY_SIMPLEX,
                 fontScale=1,
@@ -202,7 +161,7 @@ while True:
     else:
         cv.putText(
             image,
-            text="Waiting for input",
+            text="Show how are we doing",
             org=(100, 400),
             fontFace=cv.FONT_HERSHEY_SIMPLEX,
             fontScale=1,
