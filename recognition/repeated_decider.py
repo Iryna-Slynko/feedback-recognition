@@ -1,4 +1,4 @@
-from recognition.decider import Decider
+from recognition.decider2 import Decider
 
 
 class Decision:
@@ -30,7 +30,7 @@ class RepeatedDecider:
             if decision.is_decided:
                 decided += 1
 
-        if decided < 4:
+        if decided < 20:
             return False
 
         positive = 0
@@ -58,7 +58,7 @@ class RepeatedDecider:
         return decided > 0
 
     def __recent_decisions__(self):
-        return self.__decisions__[-7:]
+        return self.__decisions__[-30:]
 
     def reset(self):
         self.reset_count = 100

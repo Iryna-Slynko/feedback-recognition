@@ -1,8 +1,9 @@
 import cv2 as cv
 from json import JSONEncoder
-import numpy
+import numpy as np
 from recognition.contour_extractor import extract_contours
 from recognition.repeated_decider import RepeatedDecider
+from recognition.decider2 import Decider
 import os
 from client.api_client import ApiClient
 
@@ -27,9 +28,14 @@ apiClient = ApiClient(
 def get_image(inputFrame=None):
     while inputFrame is None:
         _, inputFrame = capture.read()
-    gray = cv.cvtColor(inputFrame, cv.COLOR_BGR2GRAY)
-    # gray = cv.GaussianBlur(gray, (11, 11), 10)
-    return gray
+
+    hsv_image = cv.cvtColor(inputFrame, cv.COLOR_BGR2HSV)
+    mask = cv.inRange(
+        hsv_image,
+        np.array([0, 50, 120], dtype=np.uint8),
+        np.array([180, 150, 250], dtype=np.uint8),
+    )
+    return mask
 
 
 def print_info(info):
@@ -62,7 +68,7 @@ def debug_output(image, big_hull_list):
 
 class NumpyArrayEncoder(JSONEncoder):
     def default(self, obj):
-        if isinstance(obj, numpy.ndarray):
+        if isinstance(obj, np.ndarray):
             return obj.tolist()
         return JSONEncoder.default(self, obj)
 
@@ -80,6 +86,7 @@ while True:
     noback = fgbg.apply(image, learningRate=0)
 
     contours = extract_contours(noback)
+
     if decider.is_reseting():
         cv.putText(
             image,
@@ -87,50 +94,38 @@ while True:
             org=(100, 400),
             fontFace=cv.FONT_HERSHEY_SIMPLEX,
             fontScale=1,
-            color=(0, 127, 127),
+            color=(0, 140, 255),
             thickness=2,
             lineType=cv.LINE_AA,
         )
         decider.analyze([])
     elif len(contours) > 0:
-        #
-        # hull_list = []
-        big_hull_list = []
-        for contour in contours:
-            if len(contour) > 150:
-                hull = cv.convexHull(contour)
-                big_hull_list.append(hull)
-        #    elif len(contour) > 50:
-        #        hull = cv.convexHull(contour)
-        #        hull_list.append(hull)
-        decider.analyze(big_hull_list)
+        decider.analyze(contours)
+
         # cv.drawContours(drawing, hull_list, -1, (0, 0, 255))
-        # draw_hulls(image, big_hull_list, (255, 0, 0))
         if decider.is_decided():
+            white_rect = np.ones(image.shape, dtype=np.uint8) * 255
+            cv.addWeighted(white_rect, 0.5, image, 0.5, 1.0)
+            cv.putText(
+                image,
+                text="Thank you for your feedback",
+                org=(100, 400),
+                fontFace=cv.FONT_HERSHEY_SIMPLEX,
+                fontScale=1,
+                color=(0, 140, 255),
+                thickness=2,
+                lineType=cv.LINE_AA,
+            )
+            window = cv.imshow("Video", image)
+
             apiClient.record(decider.is_upvote())
             decider.reset()
         elif decider.has_input():
             text = "Thanks for"
             if decider.is_upvote():
                 text += " upvoting"
-                """
-                cv.drawContours(
-                    image, [big_hull_list[decider.palm_area]], -1, (0, 0, 255)
-                )
-                cv.drawContours(
-                    image, [big_hull_list[decider.thumb_area]], -1, (0, 255, 0)
-                )
-                """
             else:
                 text += " downvoting"
-                """
-                cv.drawContours(
-                    image, [big_hull_list[decider.palm_area]], -1, (0, 0, 255)
-                )
-                cv.drawContours(
-                    image, [big_hull_list[decider.thumb_area]], -1, (255, 0, 255)
-                )
-                """
             cv.putText(
                 image,
                 text=text,
@@ -144,7 +139,7 @@ while True:
         else:
             cv.putText(
                 image,
-                text="Can not recognize please move your hand",
+                text="Show how are we doing",
                 org=(100, 400),
                 fontFace=cv.FONT_HERSHEY_SIMPLEX,
                 fontScale=1,
@@ -152,12 +147,11 @@ while True:
                 thickness=2,
                 lineType=cv.LINE_AA,
             )
-        debug_output(image, big_hull_list)
 
     else:
         cv.putText(
             image,
-            text="Waiting for input",
+            text="Show how are we doing",
             org=(100, 400),
             fontFace=cv.FONT_HERSHEY_SIMPLEX,
             fontScale=1,

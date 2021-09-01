@@ -28,11 +28,20 @@
 
           upvotesBar
             .crossValue(crossValue)
-            .mainValue((d, i) => d.upvotes);
+            .mainValue((d, i) => d.upvotes).decorate(g => {
+              g.enter().append('text')
+                .text(d => d.upvotes)
+                .attr('transform', 'translate(0, -10)')
+            });
 
           downvotesBar
             .crossValue(crossValue)
-            .mainValue((d, i) => -d.downvotes);
+            .mainValue((d, i) => -d.downvotes)
+            .decorate(g => {
+              g.enter().append('text')
+                .text(d => d.downvotes)
+                .attr('transform', 'translate(0, 10)')
+            });
 
 
           multi
@@ -45,6 +54,7 @@
                 (d, i) =>
                   'multi ' + ['upvotes', 'downvotes'][i]
               );
+
             });
 
           selection.call(multi);

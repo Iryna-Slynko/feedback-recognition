@@ -19,3 +19,10 @@ d3fc-svg {
     fill: red;
     fill-opacity: 1.0;
 }
+
+.upvotes text,
+.downvotes text {
+    text-align: center;
+    text-anchor: middle;
+    stroke: none;
+}

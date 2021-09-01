@@ -1,36 +1,36 @@
 {% extends 'base.html' %}
 
 {% block header %}
-<h1>{% block title %}Client created{% endblock %}</h1>
+<h1>{% block title %}Client {{status}}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 <div>
     <p>
-        Here are the client credentials. 
+        Here are the client credentials.
         Please save them, because you won't be able to see them again.
     </p>
     <p>
-        <table>
-            <thead>
-                <th>
-                    Client Name
-                </th>
-                <th>
-                    Client Token
-                </th>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        {{client_name}}
-                    </td>
-                    <td>
-                        {{token}}
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <table>
+        <thead>
+            <th>
+                Client Name
+            </th>
+            <th>
+                Client Token
+            </th>
+        </thead>
+        <tbody>
+            <tr>
+                <td>
+                    {{client_name}}
+                </td>
+                <td>
+                    {{token}}
+                </td>
+            </tr>
+        </tbody>
+    </table>
     </p>
 </div>
 <a class="action" href="{{ url_for('client.index') }}">Back to clients</a>
